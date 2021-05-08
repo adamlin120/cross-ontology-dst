@@ -1,29 +1,39 @@
-# Thanks to http://blog.ianpreston.ca/2020/05/13/conda_envs.html for working some of this out!
-
-# Oneshell means all lines in a recipe run in the same shell
-.ONESHELL:
-
-# Need to specify bash in order for conda activate to work
-SHELL:=${SHELL}
-
-# Note that the extra activate is needed to ensure that the activate floats env to the front of PATH
-CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
-
 # Same name as in environment.yml
 CONDA_ENV=codst
+MY_SHELL:=bash
+check_dirs := ./
 
-all: conda-env-update pip-compile pip-sync
+# Need to specify bash in order for conda activate to work
+SHELL:=/bin/$(MY_SHELL)
+
+# Note that the extra activate is needed to ensure that the activate floats env to the front of PATH
+CONDA_ACTIVATE=conda init ${MY_SHELL} ; source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
+
+all: conda-update pip-tools install-pre-commit
 
 # Create or update conda env
-conda-env-update:
-	conda env update --prune
+conda-update:
+	conda env update --prune -f environment.yml
 
 # Compile exact pip packages
-pip-compile:
+pip-tools:
 	$(CONDA_ACTIVATE) $(CONDA_ENV)
-	pip-compile -v requirements.in
+	pip install pip-tools
+	pip-compile requirement
+	s/prod.in && pip-compile requirements/dev.in
+	pip-sync requirements/prod.txt requirements/dev.txt
 
-# Install pip packages
-pip-sync:
-	$(CONDA_ACTIVATE) $(CONDA_ENV)
-	pip-sync requirements.txt
+# Arcane incantation to print all the other targets, from https://stackoverflow.com/a/26339924
+help:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+
+install-pre-commit:
+	pre-commit install --install-hooks
+
+style:
+	isort --profile black $(check_dirs)
+	black --target-version py38 $(check_dirs)
+
+quality:
+	isort --check-only --profile black $(check_dirs)
+	black --check --target-version py38 $(check_dirs)
