@@ -363,7 +363,7 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                     "name": datasets.Value("string"),
                     "description": datasets.Value("string"),
                     "value": datasets.Value("string"),
-                    "description+history": datasets.Value("string"),
+                    "service+description+history": datasets.Value("string"),
                 }
             )
         return datasets.DatasetInfo(
@@ -381,7 +381,6 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
         if self.config.name == "slots":
             self.desc_per_slot = {split: {
                 (ins["service_name"], name): des
-
                 for ins in ds
                 for des, name in zip(ins["slots"]["description"], ins["slots"]["name"])
             }
@@ -508,20 +507,24 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                     del example_turn["frames"]
                                     id_ += 1
                                     yield id_, example_turn
-                                import ipdb
-                                ipdb.set_trace()
-                                negative_slot_names = self.desc_per_slot[split].keys() - {
-                                    (service, name)
-                                    for name in slot_values_dict.keys()
-                                }
+
                                 if split == "train":
+                                    negative_slot_names = self.desc_per_slot[split].keys() - {
+                                        (service, name)
+                                        for name in slot_values_dict.keys()
+                                    }
                                     negative_slot_names = sample(negative_slot_names, max(4, min(8, len(slot_values_dict))))
+                                else:
+                                    negative_slot_names = {key for split_desc in self.desc_per_slot.values() for key in split_desc} - {
+                                        (service, name)
+                                        for name in slot_values_dict.keys()
+                                    }
                                 for service, slot_name in negative_slot_names:
                                     example_turn = {
                                         **deepcopy(example),
                                         **turn,
                                         "name": slot_name,
-                                        "description": self.desc_per_slot[
+                                        "description": self.desc_per_slot[split][
                                             (service, slot_name)
                                         ],
                                         "value": "none",
