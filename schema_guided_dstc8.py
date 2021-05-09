@@ -508,9 +508,11 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                     del example_turn["frames"]
                                     id_ += 1
                                     yield id_, example_turn
+                                import ipdb
+                                ipdb.set_trace()
                                 negative_slot_names = self.desc_per_slot[split].keys() - {
                                     (service, name)
-                                    for name in slot_values_dict.keys
+                                    for name in slot_values_dict.keys()
                                 }
                                 if split == "train":
                                     negative_slot_names = sample(negative_slot_names, max(4, min(8, len(slot_values_dict))))
