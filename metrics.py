@@ -39,14 +39,12 @@ single dialogue. The following metrics are defined:
   submissions. More details to follow with the evaluation script.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 import collections
-from fuzzywuzzy import fuzz
+
 import numpy as np
+from fuzzywuzzy import fuzz
 
 F1Scores = collections.namedtuple("F1Scores", ["f1", "precision", "recall"])
 
@@ -74,223 +72,231 @@ NAN_VAL = "NA"
 
 
 def compute_f1(list_ref, list_hyp):
-  """Compute F1 score from reference (grouth truth) list and hypothesis list.
+    """Compute F1 score from reference (grouth truth) list and hypothesis list.
 
-  Args:
-    list_ref: List of true elements.
-    list_hyp: List of postive (retrieved) elements.
+    Args:
+      list_ref: List of true elements.
+      list_hyp: List of postive (retrieved) elements.
 
-  Returns:
-    A F1Scores object containing F1, precision, and recall scores.
-  """
+    Returns:
+      A F1Scores object containing F1, precision, and recall scores.
+    """
 
-  ref = collections.Counter(list_ref)
-  hyp = collections.Counter(list_hyp)
-  true = sum(ref.values())
-  positive = sum(hyp.values())
-  true_positive = sum((ref & hyp).values())
-  precision = float(true_positive) / positive if positive else 1.0
-  recall = float(true_positive) / true if true else 1.0
-  if precision + recall > 0.0:
-    f1 = 2.0 * precision * recall / (precision + recall)
-  else:  # The F1-score is defined to be 0 if both precision and recall are 0.
-    f1 = 0.0
+    ref = collections.Counter(list_ref)
+    hyp = collections.Counter(list_hyp)
+    true = sum(ref.values())
+    positive = sum(hyp.values())
+    true_positive = sum((ref & hyp).values())
+    precision = float(true_positive) / positive if positive else 1.0
+    recall = float(true_positive) / true if true else 1.0
+    if precision + recall > 0.0:
+        f1 = 2.0 * precision * recall / (precision + recall)
+    else:  # The F1-score is defined to be 0 if both precision and recall are 0.
+        f1 = 0.0
 
-  return F1Scores(f1=f1, precision=precision, recall=recall)
+    return F1Scores(f1=f1, precision=precision, recall=recall)
 
 
 def fuzzy_string_match(str_ref, str_hyp):
-  """Returns fuzzy string similarity score in range [0.0, 1.0]."""
+    """Returns fuzzy string similarity score in range [0.0, 1.0]."""
 
-  # The higher the score, the higher the similarity between the two strings.
-  return fuzz.token_sort_ratio(str_ref, str_hyp) / 100.0
+    # The higher the score, the higher the similarity between the two strings.
+    return fuzz.token_sort_ratio(str_ref, str_hyp) / 100.0
 
 
 def noncat_slot_value_match(str_ref_list, str_hyp, use_fuzzy_match):
-  """Calculate non-categorical slots correctness.
+    """Calculate non-categorical slots correctness.
 
-  Args:
-    str_ref_list: a list of reference strings.
-    str_hyp: the hypothesis string.
-    use_fuzzy_match: whether to use fuzzy string matching.
+    Args:
+      str_ref_list: a list of reference strings.
+      str_hyp: the hypothesis string.
+      use_fuzzy_match: whether to use fuzzy string matching.
 
-  Returns:
-    score: The highest fuzzy string match score of the references and hypotheis.
-  """
-  score = 0.0
-  for str_ref in str_ref_list:
-    if not use_fuzzy_match:
-      match_score = float(str_ref == str_hyp)
-    else:
-      match_score = fuzzy_string_match(str_ref, str_hyp)
-    score = max(score, match_score)
-  return score
-
-
-def compare_slot_values(slot_values_ref, slot_values_hyp, service,
-                        use_fuzzy_match):
-  """Compare and get correctness of goal state's slot_values.
-
-  Args:
-    slot_values_ref: goal state slot_values from reference (ground truth).
-    slot_values_hyp: goal state slot_values from hypothesis (prediction).
-    service: a service data structure in the schema. We use it to obtain the
-      list of slots in the service and infer whether a slot is categorical.
-    use_fuzzy_match: whether to use fuzzy string matching for non-categorical
-      slot values.
-
-  Returns:
-    (list_cor, slot_active, slot_cat)
-    list_cor: list of corectness scores, each corresponding to one slot in the
-        service. The score is a float either 0.0 or 1.0 for categorical slot,
-        and in range [0.0, 1.0] for non-categorical slot.
-    slot_active: list indicating whether the element in list_cor corresponds to
-        an active ground-truth slot.
-    slot_cat: list indicating whether the element in list_cor corresponds to a
-        categorical slot.
-  """
-  list_cor = []
-  slot_active = []
-  slot_cat = []
-
-  for slot in service["slots"]:
-    slot_name = slot["name"]
-    slot_cat.append(slot["is_categorical"])
-
-    if slot_name in slot_values_ref:  # REF=active
-      slot_active.append(True)
-      if slot_name in slot_values_hyp:  # HYP=active, apply matching
-        value_ref_list = slot_values_ref[slot_name]
-        value_hyp = slot_values_hyp[slot_name][0]
-        if slot["is_categorical"]:
-          cor = float(value_ref_list[0] == value_hyp)
+    Returns:
+      score: The highest fuzzy string match score of the references and hypotheis.
+    """
+    score = 0.0
+    for str_ref in str_ref_list:
+        if not use_fuzzy_match:
+            match_score = float(str_ref == str_hyp)
         else:
-          cor = noncat_slot_value_match(value_ref_list, value_hyp,
-                                        use_fuzzy_match)
+            match_score = fuzzy_string_match(str_ref, str_hyp)
+        score = max(score, match_score)
+    return score
 
-        list_cor.append(cor)
-      else:  # HYP=off
-        list_cor.append(0.0)
-    else:  # REF=off
-      slot_active.append(False)
-      if slot_name in slot_values_hyp:  # HYP=active
-        list_cor.append(0.0)
-      else:  # HYP=off
-        list_cor.append(1.0)
 
-  assert len(list_cor) == len(service["slots"])
-  assert len(slot_active) == len(service["slots"])
-  assert len(slot_cat) == len(service["slots"])
-  return list_cor, slot_active, slot_cat
+def compare_slot_values(slot_values_ref, slot_values_hyp, service, use_fuzzy_match):
+    """Compare and get correctness of goal state's slot_values.
+
+    Args:
+      slot_values_ref: goal state slot_values from reference (ground truth).
+      slot_values_hyp: goal state slot_values from hypothesis (prediction).
+      service: a service data structure in the schema. We use it to obtain the
+        list of slots in the service and infer whether a slot is categorical.
+      use_fuzzy_match: whether to use fuzzy string matching for non-categorical
+        slot values.
+
+    Returns:
+      (list_cor, slot_active, slot_cat)
+      list_cor: list of corectness scores, each corresponding to one slot in the
+          service. The score is a float either 0.0 or 1.0 for categorical slot,
+          and in range [0.0, 1.0] for non-categorical slot.
+      slot_active: list indicating whether the element in list_cor corresponds to
+          an active ground-truth slot.
+      slot_cat: list indicating whether the element in list_cor corresponds to a
+          categorical slot.
+    """
+    list_cor = []
+    slot_active = []
+    slot_cat = []
+
+    for slot in service["slots"]:
+        slot_name = slot["name"]
+        slot_cat.append(slot["is_categorical"])
+
+        if slot_name in slot_values_ref:  # REF=active
+            slot_active.append(True)
+            if slot_name in slot_values_hyp:  # HYP=active, apply matching
+                value_ref_list = slot_values_ref[slot_name]
+                value_hyp = slot_values_hyp[slot_name][0]
+                if slot["is_categorical"]:
+                    cor = float(value_ref_list[0] == value_hyp)
+                else:
+                    cor = noncat_slot_value_match(
+                        value_ref_list, value_hyp, use_fuzzy_match
+                    )
+
+                list_cor.append(cor)
+            else:  # HYP=off
+                list_cor.append(0.0)
+        else:  # REF=off
+            slot_active.append(False)
+            if slot_name in slot_values_hyp:  # HYP=active
+                list_cor.append(0.0)
+            else:  # HYP=off
+                list_cor.append(1.0)
+
+    assert len(list_cor) == len(service["slots"])
+    assert len(slot_active) == len(service["slots"])
+    assert len(slot_cat) == len(service["slots"])
+    return list_cor, slot_active, slot_cat
 
 
 def get_active_intent_accuracy(frame_ref, frame_hyp):
-  """Get active intent accuracy of a frame.
+    """Get active intent accuracy of a frame.
 
-  Args:
-    frame_ref: single semantic frame from reference (ground truth) file.
-    frame_hyp: single semantic frame from hypothesis (prediction) file.
+    Args:
+      frame_ref: single semantic frame from reference (ground truth) file.
+      frame_hyp: single semantic frame from hypothesis (prediction) file.
 
-  Returns:
-    1.0 if the intent prediction is correct, otherwise 0.0.
-  """
-  return float(frame_ref["state"]["active_intent"] == frame_hyp["state"]
-               ["active_intent"])
+    Returns:
+      1.0 if the intent prediction is correct, otherwise 0.0.
+    """
+    return float(
+        frame_ref["state"]["active_intent"] == frame_hyp["state"]["active_intent"]
+    )
 
 
 def get_slot_tagging_f1(frame_ref, frame_hyp, utt, service):
-  """Get slot tagging (non-categorical slots only) F1 scores of a frame.
+    """Get slot tagging (non-categorical slots only) F1 scores of a frame.
 
-  Args:
-    frame_ref: single semantic frame from reference (ground truth) file.
-    frame_hyp: single semantic frame from hypothesis (prediction) file.
-    utt: user utterance. Slot tagging annotations are the character positions in
-      the utterance.
-    service: a service data structure in the schema. We use it to infer whether
-      a slot is non-categorical.
+    Args:
+      frame_ref: single semantic frame from reference (ground truth) file.
+      frame_hyp: single semantic frame from hypothesis (prediction) file.
+      utt: user utterance. Slot tagging annotations are the character positions in
+        the utterance.
+      service: a service data structure in the schema. We use it to infer whether
+        a slot is non-categorical.
 
-  Returns:
-    A F1Scores object containing F1, precision, and recall scores.
-  """
+    Returns:
+      A F1Scores object containing F1, precision, and recall scores.
+    """
 
-  list_noncat_slots = [
-      s["name"] for s in service["slots"] if not s["is_categorical"]
-  ]
-  if "slots" not in frame_hyp:
-    return None
-  else:
-    list_ref = [(s["slot"], utt[s["start"]:s["exclusive_end"]])
-                for s in frame_ref["slots"]
-                if s["slot"] in list_noncat_slots]
-    list_hyp = [(s["slot"], utt[s["start"]:s["exclusive_end"]])
-                for s in frame_hyp["slots"]
-                if s["slot"] in list_noncat_slots]
-    return compute_f1(list_ref, list_hyp)
+    list_noncat_slots = [s["name"] for s in service["slots"] if not s["is_categorical"]]
+    if "slots" not in frame_hyp:
+        return None
+    else:
+        list_ref = [
+            (s["slot"], utt[s["start"] : s["exclusive_end"]])
+            for s in frame_ref["slots"]
+            if s["slot"] in list_noncat_slots
+        ]
+        list_hyp = [
+            (s["slot"], utt[s["start"] : s["exclusive_end"]])
+            for s in frame_hyp["slots"]
+            if s["slot"] in list_noncat_slots
+        ]
+        return compute_f1(list_ref, list_hyp)
 
 
 def get_requested_slots_f1(frame_ref, frame_hyp):
-  """Get requested slots F1 scores of a frame.
+    """Get requested slots F1 scores of a frame.
 
-  Args:
-    frame_ref: single semantic frame from reference (ground truth) file.
-    frame_hyp: single semantic frame from hypothesis (prediction) file.
+    Args:
+      frame_ref: single semantic frame from reference (ground truth) file.
+      frame_hyp: single semantic frame from hypothesis (prediction) file.
 
-  Returns:
-    A F1Scores object containing F1, precision, and recall scores.
-  """
-  return compute_f1(frame_ref["state"]["requested_slots"],
-                    frame_hyp["state"]["requested_slots"])
+    Returns:
+      A F1Scores object containing F1, precision, and recall scores.
+    """
+    return compute_f1(
+        frame_ref["state"]["requested_slots"], frame_hyp["state"]["requested_slots"]
+    )
 
 
-def get_average_and_joint_goal_accuracy(frame_ref, frame_hyp, service,
-                                        use_fuzzy_match):
-  """Get average and joint goal accuracies of a frame.
+def get_average_and_joint_goal_accuracy(frame_ref, frame_hyp, service, use_fuzzy_match):
+    """Get average and joint goal accuracies of a frame.
 
-  Args:
-    frame_ref: single semantic frame from reference (ground truth) file.
-    frame_hyp: single semantic frame from hypothesis (prediction) file.
-    service: a service data structure in the schema. We use it to obtain the
-      list of slots in the service and infer whether a slot is categorical.
-    use_fuzzy_match: whether to use fuzzy string matching for comparing
-      non-categorical slot values.
+    Args:
+      frame_ref: single semantic frame from reference (ground truth) file.
+      frame_hyp: single semantic frame from hypothesis (prediction) file.
+      service: a service data structure in the schema. We use it to obtain the
+        list of slots in the service and infer whether a slot is categorical.
+      use_fuzzy_match: whether to use fuzzy string matching for comparing
+        non-categorical slot values.
 
-  Returns:
-    goal_acc: a dict whose values are average / joint
-        all-goal / categorical-goal / non-categorical-goal accuracies.
-  """
-  goal_acc = {}
+    Returns:
+      goal_acc: a dict whose values are average / joint
+          all-goal / categorical-goal / non-categorical-goal accuracies.
+    """
+    goal_acc = {}
 
-  list_acc, slot_active, slot_cat = compare_slot_values(
-      frame_ref["state"]["slot_values"], frame_hyp["state"]["slot_values"],
-      service, use_fuzzy_match)
+    list_acc, slot_active, slot_cat = compare_slot_values(
+        frame_ref["state"]["slot_values"],
+        frame_hyp["state"]["slot_values"],
+        service,
+        use_fuzzy_match,
+    )
 
-  # (4) Average goal accuracy.
-  active_acc = [acc for acc, active in zip(list_acc, slot_active) if active]
-  goal_acc[AVERAGE_GOAL_ACCURACY] = np.mean(
-      active_acc) if active_acc else NAN_VAL
-  # (4-a) categorical.
-  active_cat_acc = [
-      acc for acc, active, cat in zip(list_acc, slot_active, slot_cat)
-      if active and cat
-  ]
-  goal_acc[AVERAGE_CAT_ACCURACY] = (
-      np.mean(active_cat_acc) if active_cat_acc else NAN_VAL)
-  # (4-b) non-categorical.
-  active_noncat_acc = [
-      acc for acc, active, cat in zip(list_acc, slot_active, slot_cat)
-      if active and not cat
-  ]
-  goal_acc[AVERAGE_NONCAT_ACCURACY] = (
-      np.mean(active_noncat_acc) if active_noncat_acc else NAN_VAL)
+    # (4) Average goal accuracy.
+    active_acc = [acc for acc, active in zip(list_acc, slot_active) if active]
+    goal_acc[AVERAGE_GOAL_ACCURACY] = np.mean(active_acc) if active_acc else NAN_VAL
+    # (4-a) categorical.
+    active_cat_acc = [
+        acc
+        for acc, active, cat in zip(list_acc, slot_active, slot_cat)
+        if active and cat
+    ]
+    goal_acc[AVERAGE_CAT_ACCURACY] = (
+        np.mean(active_cat_acc) if active_cat_acc else NAN_VAL
+    )
+    # (4-b) non-categorical.
+    active_noncat_acc = [
+        acc
+        for acc, active, cat in zip(list_acc, slot_active, slot_cat)
+        if active and not cat
+    ]
+    goal_acc[AVERAGE_NONCAT_ACCURACY] = (
+        np.mean(active_noncat_acc) if active_noncat_acc else NAN_VAL
+    )
 
-  # (5) Joint goal accuracy.
-  goal_acc[JOINT_GOAL_ACCURACY] = np.prod(list_acc) if list_acc else NAN_VAL
-  # (5-a) categorical.
-  cat_acc = [acc for acc, cat in zip(list_acc, slot_cat) if cat]
-  goal_acc[JOINT_CAT_ACCURACY] = np.prod(cat_acc) if cat_acc else NAN_VAL
-  # (5-b) non-categorical.
-  noncat_acc = [acc for acc, cat in zip(list_acc, slot_cat) if not cat]
-  goal_acc[JOINT_NONCAT_ACCURACY] = np.prod(
-      noncat_acc) if noncat_acc else NAN_VAL
+    # (5) Joint goal accuracy.
+    goal_acc[JOINT_GOAL_ACCURACY] = np.prod(list_acc) if list_acc else NAN_VAL
+    # (5-a) categorical.
+    cat_acc = [acc for acc, cat in zip(list_acc, slot_cat) if cat]
+    goal_acc[JOINT_CAT_ACCURACY] = np.prod(cat_acc) if cat_acc else NAN_VAL
+    # (5-b) non-categorical.
+    noncat_acc = [acc for acc, cat in zip(list_acc, slot_cat) if not cat]
+    goal_acc[JOINT_NONCAT_ACCURACY] = np.prod(noncat_acc) if noncat_acc else NAN_VAL
 
-  return goal_acc
+    return goal_acc

@@ -4,7 +4,6 @@ MODEL="${2:-mrm8488/t5-base-finetuned-squadv2}"
 EPOCH="${3:-20}"
 
 export WANDB_PROJECT="T5DST"
-export TOKENIZERS_PARALLELISM=false
 
 python run_summarization.py \
     --output_dir "./output/${RUN_NAME}" \
@@ -19,10 +18,10 @@ python run_summarization.py \
     --dataset_name "./schema_guided_dstc8.py" \
     --dataset_config "slots" \
     --source_prefix "question: " \
-    --text_column "slot_description+history" \
-    --summary_column "slot_value" \
-    --per_device_train_batch_size 12 \
-    --per_device_eval_batch_size 8 \
+    --text_column "service+description+history" \
+    --summary_column "value" \
+    --per_device_train_batch_size 2 \
+    --per_device_eval_batch_size 2 \
     --gradient_accumulation_steps 2 \
     --seed 13 \
     --fp16 True \

@@ -17,10 +17,9 @@
 
 import json
 from copy import deepcopy
-from itertools import cycle
+from random import sample
 
 import datasets
-
 
 _CITATION = """\
 @inproceedings{aaai/RastogiZSGK20,
@@ -128,10 +127,20 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
     VERSION = datasets.Version("1.0.0")
 
     BUILDER_CONFIGS = [
-        datasets.BuilderConfig(name="dialogues", description="The dataset of annotated dialogues."),
-        datasets.BuilderConfig(name="schema", description="The schemas corresponding to the API calls."),
-        datasets.BuilderConfig(name="turns", description="The dataset of annotated dialogue turns. (Only user turns)"),
-        datasets.BuilderConfig(name="slots", description="The dataset of annotated dialogue turns. (Only user turns)"),
+        datasets.BuilderConfig(
+            name="dialogues", description="The dataset of annotated dialogues."
+        ),
+        datasets.BuilderConfig(
+            name="schema", description="The schemas corresponding to the API calls."
+        ),
+        datasets.BuilderConfig(
+            name="turns",
+            description="The dataset of annotated dialogue turns. (Only user turns)",
+        ),
+        datasets.BuilderConfig(
+            name="slots",
+            description="The dataset of annotated dialogue turns. (Only user turns)",
+        ),
     ]
 
     DEFAULT_CONFIG_NAME = "dialogues"
@@ -147,7 +156,9 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                             "name": datasets.Value("string"),
                             "description": datasets.Value("string"),
                             "is_categorical": datasets.Value("bool"),
-                            "possible_values": datasets.Sequence(datasets.Value("string")),
+                            "possible_values": datasets.Sequence(
+                                datasets.Value("string")
+                            ),
                         }
                     ),
                     "intents": datasets.Sequence(
@@ -155,7 +166,9 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                             "name": datasets.Value("string"),
                             "description": datasets.Value("string"),
                             "is_transactional": datasets.Value("bool"),
-                            "required_slots": datasets.Sequence(datasets.Value("string")),
+                            "required_slots": datasets.Sequence(
+                                datasets.Value("string")
+                            ),
                             # optional_slots was originally a dictionary
                             "optional_slots": datasets.Sequence(
                                 {
@@ -190,12 +203,16 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                     # optional
                                     "state": {
                                         "active_intent": datasets.Value("string"),
-                                        "requested_slots": datasets.Sequence(datasets.Value("string")),
+                                        "requested_slots": datasets.Sequence(
+                                            datasets.Value("string")
+                                        ),
                                         # slot_values was originally a dictionary
                                         "slot_values": datasets.Sequence(
                                             {
                                                 "slot_name": datasets.Value("string"),
-                                                "slot_value_list": datasets.Sequence(datasets.Value("string")),
+                                                "slot_value_list": datasets.Sequence(
+                                                    datasets.Value("string")
+                                                ),
                                             }
                                         ),
                                     },
@@ -205,9 +222,13 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                             # optional
                                             "slot": datasets.Value("string"),
                                             # optional
-                                            "canonical_values": datasets.Sequence(datasets.Value("string")),
+                                            "canonical_values": datasets.Sequence(
+                                                datasets.Value("string")
+                                            ),
                                             # optional
-                                            "values": datasets.Sequence(datasets.Value("string")),
+                                            "values": datasets.Sequence(
+                                                datasets.Value("string")
+                                            ),
                                         }
                                     ),
                                     # optional
@@ -217,8 +238,12 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                             "service_results_list": datasets.Sequence(
                                                 # originally each list item was a dictionary (optional)
                                                 {
-                                                    "service_slot_name": datasets.Value("string"),
-                                                    "service_canonical_value": datasets.Value("string"),
+                                                    "service_slot_name": datasets.Value(
+                                                        "string"
+                                                    ),
+                                                    "service_canonical_value": datasets.Value(
+                                                        "string"
+                                                    ),
                                                 }
                                             )
                                         }
@@ -229,8 +254,12 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                         # parameters was originally a dictionary
                                         "parameters": datasets.Sequence(
                                             {
-                                                "parameter_slot_name": datasets.Value("string"),
-                                                "parameter_canonical_value": datasets.Value("string"),
+                                                "parameter_slot_name": datasets.Value(
+                                                    "string"
+                                                ),
+                                                "parameter_canonical_value": datasets.Value(
+                                                    "string"
+                                                ),
                                             }
                                         ),
                                     },
@@ -260,12 +289,16 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                             # optional
                             "state": {
                                 "active_intent": datasets.Value("string"),
-                                "requested_slots": datasets.Sequence(datasets.Value("string")),
+                                "requested_slots": datasets.Sequence(
+                                    datasets.Value("string")
+                                ),
                                 # slot_values was originally a dictionary
                                 "slot_values": datasets.Sequence(
                                     {
                                         "slot_name": datasets.Value("string"),
-                                        "slot_value_list": datasets.Sequence(datasets.Value("string")),
+                                        "slot_value_list": datasets.Sequence(
+                                            datasets.Value("string")
+                                        ),
                                     }
                                 ),
                             },
@@ -275,9 +308,13 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                     # optional
                                     "slot": datasets.Value("string"),
                                     # optional
-                                    "canonical_values": datasets.Sequence(datasets.Value("string")),
+                                    "canonical_values": datasets.Sequence(
+                                        datasets.Value("string")
+                                    ),
                                     # optional
-                                    "values": datasets.Sequence(datasets.Value("string")),
+                                    "values": datasets.Sequence(
+                                        datasets.Value("string")
+                                    ),
                                 }
                             ),
                             # optional
@@ -288,8 +325,12 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                     "service_results_list": datasets.Sequence(
                                         # originally each list item was a dictionary (optional)
                                         {
-                                            "service_slot_name": datasets.Value("string"),
-                                            "service_canonical_value": datasets.Value("string"),
+                                            "service_slot_name": datasets.Value(
+                                                "string"
+                                            ),
+                                            "service_canonical_value": datasets.Value(
+                                                "string"
+                                            ),
                                         }
                                     )
                                 }
@@ -301,7 +342,9 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                 "parameters": datasets.Sequence(
                                     {
                                         "parameter_slot_name": datasets.Value("string"),
-                                        "parameter_canonical_value": datasets.Value("string"),
+                                        "parameter_canonical_value": datasets.Value(
+                                            "string"
+                                        ),
                                     }
                                 ),
                             },
@@ -317,70 +360,10 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                     "speaker": datasets.ClassLabel(names=["USER", "SYSTEM"]),
                     "utterance": datasets.Value("string"),
                     "history": datasets.Value("string"),
-                    "slot_name": datasets.Value("string"),
-                    "slot_description": datasets.Value("string"),
-                    "slot_value": datasets.Value("string"),
-                    "slot_description+history": datasets.Value("string"),
-                    "frames": datasets.Sequence(
-                        {
-                            "service": datasets.Value("string"),
-                            "slots": datasets.Sequence(
-                                {
-                                    "slot": datasets.Value("string"),
-                                    "start": datasets.Value("int32"),
-                                    "exclusive_end": datasets.Value("int32"),
-                                }
-                            ),
-                            # optional
-                            "state": {
-                                "active_intent": datasets.Value("string"),
-                                "requested_slots": datasets.Sequence(datasets.Value("string")),
-                                # slot_values was originally a dictionary
-                                "slot_values": datasets.Sequence(
-                                    {
-                                        "slot_name": datasets.Value("string"),
-                                        "slot_value_list": datasets.Sequence(datasets.Value("string")),
-                                    }
-                                ),
-                            },
-                            "actions": datasets.Sequence(
-                                {
-                                    "act": datasets.ClassLabel(names=_ALL_ACTS),
-                                    # optional
-                                    "slot": datasets.Value("string"),
-                                    # optional
-                                    "canonical_values": datasets.Sequence(datasets.Value("string")),
-                                    # optional
-                                    "values": datasets.Sequence(datasets.Value("string")),
-                                }
-                            ),
-                            # optional
-                            "service_results": datasets.Sequence(
-                                # Arrow doesn't like Sequences of Sequences for default values so we need a
-                                # Sequence of Features of Sequences
-                                {
-                                    "service_results_list": datasets.Sequence(
-                                        # originally each list item was a dictionary (optional)
-                                        {
-                                            "service_slot_name": datasets.Value("string"),
-                                            "service_canonical_value": datasets.Value("string"),
-                                        }
-                                    )
-                                }
-                            ),
-                            # optional
-                            "service_call": {
-                                "method": datasets.Value("string"),
-                                # parameters was originally a dictionary
-                                "parameters": datasets.Sequence(
-                                    {
-                                        "parameter_slot_name": datasets.Value("string"),
-                                        "parameter_canonical_value": datasets.Value("string"),
-                                    }
-                                ),
-                            },
-                        }
-                    ),
+                    "name": datasets.Value("string"),
+                    "description": datasets.Value("string"),
+                    "value": datasets.Value("string"),
+                    "description+history": datasets.Value("string"),
                 }
             )
         return datasets.DatasetInfo(
@@ -395,6 +378,18 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
     def _split_generators(self, dl_manager):
         """Returns SplitGenerators."""
         data_files = dl_manager.download_and_extract(_URLs)
+        if self.config.name == "slots":
+            self.desc_per_slot = {split: {
+                (ins["service_name"], name): des
+
+                for ins in ds
+                for des, name in zip(ins["slots"]["description"], ins["slots"]["name"])
+            }
+                for split, ds in datasets.load_dataset(
+                    "schema_guided_dstc8", "schema"
+                ).items()
+            }
+
         return [
             datasets.SplitGenerator(
                 name=spl_enum,
@@ -412,12 +407,15 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, filepaths, split):
         id_ = -1
-        file_list = [fpath for fname, fpath in filepaths.items() if fname.startswith(f"{split}_{self.config.name if self.config.name in {'dialogues', 'schema'} else 'dialogues'}")]
+        file_list = [
+            fpath
+            for fname, fpath in filepaths.items()
+            if fname.startswith(
+                f"{split}_{self.config.name if self.config.name in {'dialogues', 'schema'} else 'dialogues'}"
+            )
+        ]
         for filepath in file_list:
             examples = json.load(open(filepath, encoding="utf-8"))
-            # TODO: delete
-            # if id_ > 3:
-            #     break
             for example in examples:
                 if self.config.name == "schema":
                     example["intents"] = example.get("intents", [])
@@ -431,7 +429,10 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                     history = ""
                     for turn in example["turns"]:
                         history += f"{turn['speaker']}: {turn['utterance']} "
-                        if self.config.name in {'turns', 'slots'} and turn["speaker"] == "SYSTEM":
+                        if (
+                            self.config.name in {"turns", "slots"}
+                            and turn["speaker"] == "SYSTEM"
+                        ):
                             continue
                         for frame in turn["frames"]:
                             # add empty state if the key is missing from the dict
@@ -452,7 +453,9 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                             # add default values for optional fields in actions
                             for action in frame["actions"]:
                                 action["slot"] = action.get("slot", "")
-                                action["canonical_values"] = action.get("canonical_values", [])
+                                action["canonical_values"] = action.get(
+                                    "canonical_values", []
+                                )
                                 action["values"] = action.get("values", [])
                             # add "service_results" field when necessary and linearize the dictionaries in the list otherwise
                             service_results = []
@@ -460,7 +463,9 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                 service_results += [
                                     {
                                         "service_slot_name": list(result.keys()),
-                                        "service_canonical_value": list(result.values()),
+                                        "service_canonical_value": list(
+                                            result.values()
+                                        ),
                                     }
                                 ]
                             frame["service_results"] = {
@@ -474,22 +479,57 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                                     "parameters": {},
                                 },
                             )
-                            parameters_dict = frame["service_call"].get("parameters", {})
+                            parameters_dict = frame["service_call"].get(
+                                "parameters", {}
+                            )
                             frame["service_call"]["parameters"] = {
                                 "parameter_slot_name": list(parameters_dict.keys()),
-                                "parameter_canonical_value": list(parameters_dict.values()),
+                                "parameter_canonical_value": list(
+                                    parameters_dict.values()
+                                ),
                             }
                             if self.config.name == "slots":
-                                # TODO: all slots
+                                service = frame["service"]
                                 for slot_name, slot_value in slot_values_dict.items():
-                                    example_turn = {**deepcopy(example), **turn}
-                                    example_turn["slot_name"] = slot_name
-                                    # TODO: slot description
-                                    example_turn["slot_description"] = slot_name
-                                    example_turn["slot_value"] = slot_value[0]
-                                    example_turn["history"] = history.strip()
-                                    example_turn["slot_description+history"] = f"{example_turn['slot_description']} context: {example_turn['history']}".strip()
+                                    example_turn = {
+                                        **deepcopy(example),
+                                        **turn,
+                                        "name": slot_name,
+                                        "description": self.desc_per_slot[split][
+                                            (service, slot_name)
+                                        ],
+                                        "value": slot_value[0],
+                                        "history": history.strip(),
+                                    }
+                                    example_turn[
+                                        "service+description+history"
+                                    ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
                                     del example_turn["turns"]
+                                    del example_turn["frames"]
+                                    id_ += 1
+                                    yield id_, example_turn
+                                negative_slot_names = self.desc_per_slot[split].keys() - {
+                                    (service, name)
+                                    for name in name in slot_values_dict.keys
+                                }
+                                if split == "train":
+                                    negative_slot_names = sample(negative_slot_names, max(4, min(8, len(slot_values_dict))))
+                                for service, slot_name in negative_slot_names:
+                                    example_turn = {
+                                        **deepcopy(example),
+                                        **turn,
+                                        "name": slot_name,
+                                        "description": self.desc_per_slot[
+                                            (service, slot_name)
+                                        ],
+                                        "value": "none",
+                                        "history": history.strip(),
+                                    }
+                                    example_turn[
+                                        "service+description+history"
+                                    ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
+                                    del example_turn["turns"]
+                                    del example_turn["frames"]
                                     id_ += 1
                                     yield id_, example_turn
                         if self.config.name == "turns":

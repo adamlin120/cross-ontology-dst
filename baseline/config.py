@@ -25,54 +25,48 @@ import collections
 # max_num_value_per_cat_slot: Maximum allowed number of values per categorical
 # trackable slot.
 # max_num_intent: Maximum allowed number of intents for a service.
-DatasetConfig = collections.namedtuple("DatasetConfig", [
-    "file_ranges", "max_num_cat_slot", "max_num_noncat_slot",
-    "max_num_value_per_cat_slot", "max_num_intent"
-])
+DatasetConfig = collections.namedtuple(
+    "DatasetConfig",
+    [
+        "file_ranges",
+        "max_num_cat_slot",
+        "max_num_noncat_slot",
+        "max_num_value_per_cat_slot",
+        "max_num_intent",
+    ],
+)
 
 DATASET_CONFIG = {
-    "dstc8_single_domain":
-        DatasetConfig(
-            file_ranges={
-                "train": range(1, 44),
-                "dev": range(1, 8),
-                "test": range(1, 12)
-            },
-            max_num_cat_slot=6,
-            max_num_noncat_slot=12,
-            max_num_value_per_cat_slot=12,
-            max_num_intent=4),
-    "dstc8_multi_domain":
-        DatasetConfig(
-            file_ranges={
-                "train": range(44, 128),
-                "dev": range(8, 21),
-                "test": range(12, 35)
-            },
-            max_num_cat_slot=6,
-            max_num_noncat_slot=12,
-            max_num_value_per_cat_slot=12,
-            max_num_intent=4),
-    "dstc8_all":
-        DatasetConfig(
-            file_ranges={
-                "train": range(1, 128),
-                "dev": range(1, 21),
-                "test": range(1, 35)
-            },
-            max_num_cat_slot=6,
-            max_num_noncat_slot=12,
-            max_num_value_per_cat_slot=12,
-            max_num_intent=4),
-    "multiwoz21_all":
-        DatasetConfig(
-            file_ranges={
-                "train": range(1, 18),
-                "dev": range(1, 3),
-                "test": range(1, 3)
-            },
-            max_num_cat_slot=9,
-            max_num_noncat_slot=4,
-            max_num_value_per_cat_slot=47,
-            max_num_intent=1)
+    "dstc8_single_domain": DatasetConfig(
+        file_ranges={"train": range(1, 44), "dev": range(1, 8), "test": range(1, 12)},
+        max_num_cat_slot=6,
+        max_num_noncat_slot=12,
+        max_num_value_per_cat_slot=12,
+        max_num_intent=4,
+    ),
+    "dstc8_multi_domain": DatasetConfig(
+        file_ranges={
+            "train": range(44, 128),
+            "dev": range(8, 21),
+            "test": range(12, 35),
+        },
+        max_num_cat_slot=6,
+        max_num_noncat_slot=12,
+        max_num_value_per_cat_slot=12,
+        max_num_intent=4,
+    ),
+    "dstc8_all": DatasetConfig(
+        file_ranges={"train": range(1, 128), "dev": range(1, 21), "test": range(1, 35)},
+        max_num_cat_slot=6,
+        max_num_noncat_slot=12,
+        max_num_value_per_cat_slot=12,
+        max_num_intent=4,
+    ),
+    "multiwoz21_all": DatasetConfig(
+        file_ranges={"train": range(1, 18), "dev": range(1, 3), "test": range(1, 3)},
+        max_num_cat_slot=9,
+        max_num_noncat_slot=4,
+        max_num_value_per_cat_slot=47,
+        max_num_intent=1,
+    ),
 }
