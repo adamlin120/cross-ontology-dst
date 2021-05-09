@@ -19,8 +19,7 @@ conda-update:
 pip-tools:
 	$(CONDA_ACTIVATE) $(CONDA_ENV)
 	pip install pip-tools
-	pip-compile requirement
-	s/prod.in && pip-compile requirements/dev.in
+	pip-compile requirements/prod.in && pip-compile requirements/dev.in
 	pip-sync requirements/prod.txt requirements/dev.txt
 
 # Arcane incantation to print all the other targets, from https://stackoverflow.com/a/26339924

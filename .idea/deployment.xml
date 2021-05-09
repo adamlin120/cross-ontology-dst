@@ -7,6 +7,13 @@
           <mappings>
             <mapping deploy="cross-ontology-dst" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath path="/cross-ontology-dst/cased_L-12_H-768_A-12" />
+            <excludedPath path="/cross-ontology-dst/dstc8-schema-guided-dialogue" />
+            <excludedPath path="/cross-ontology-dst/cased_L-12_H-768_A-12.zip" />
+            <excludedPath path="/cross-ontology-dst/output" />
+            <excludedPath path="/cross-ontology-dst/multiwoz_data" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
