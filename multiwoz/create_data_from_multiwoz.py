@@ -43,7 +43,9 @@ flags.DEFINE_boolean(
 )
 
 flags.DEFINE_string(
-    "schema_file_name", "schema.json", "Name of the schema file to use."
+    "schema_file_name",
+    "slot_description.json",
+    "Name of the slot_description file to use.",
 )
 
 _PATH_MAPPING = [
@@ -380,7 +382,7 @@ class Processor(object):
         We use _infer_domains_from_actions to infer the list of possible domains.
         Domains that appear in the user actions and dialogue updates are prioritised
         over domains mentioned in the previous system actions.
-        In the provided schema of MultiWOZ 2.1, every service contains one domain,
+        In the provided slot_description of MultiWOZ 2.1, every service contains one domain,
         so the active_intent is either "NONE" or "find_{domain}" for every service.
 
         Args:
@@ -426,13 +428,13 @@ class Processor(object):
         return slot_value and slot_value != "not mentioned" and slot_value != "none"
 
     def _new_service_name(self, domain):
-        """Get the new service_name decided by the new schema."""
-        # If the schema file only contains one service, we summarize all the slots
+        """Get the new service_name decided by the new slot_description."""
+        # If the slot_description file only contains one service, we summarize all the slots
         # into one service, otherwise, keep the domain name as the service name.
         return _DEFAULT_SERVICE_NAME if (len(self._schemas.services) == 1) else domain
 
     def _get_slot_name(self, slot_name, service_name, in_book_field=False):
-        """Get the slot name that is consistent with the schema file."""
+        """Get the slot name that is consistent with the slot_description file."""
         slot_name = "book" + slot_name if in_book_field else slot_name
         return "-".join([service_name, slot_name]).lower()
 
@@ -460,8 +462,8 @@ class Processor(object):
                 for slot_name, slot_val in values["semi"].items()
             }
             dialog_states_of_one_domain.update(new_states)
-            # Get the new service_name that is decided by the schema. If the
-            # schema file only contains one service, we summarize all the slots into
+            # Get the new service_name that is decided by the slot_description. If the
+            # slot_description file only contains one service, we summarize all the slots into
             # one service, otherwise, keep the domain name as the service name.
             new_service_name = self._new_service_name(domain_name)
             # Record the orig state values without any change.
@@ -506,7 +508,7 @@ class Processor(object):
                         dialog_states_of_one_domain[slot] = sorted(
                             overwrite_slot_values[new_service_name][slot][value]
                         )
-            # Only track the slot values that are listed in the schema file. Slots
+            # Only track the slot values that are listed in the slot_description file. Slots
             # such as reference number, phone number are filtered out.
             for (key, value) in dialog_states_of_one_domain.items():
                 if key in self._schemas.get_service_schema(new_service_name).slots:

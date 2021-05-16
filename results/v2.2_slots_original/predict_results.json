@@ -1,0 +1,19 @@
+{
+    "init_mem_cpu_alloc_delta": 2531115008,
+    "init_mem_cpu_peaked_delta": 51589120,
+    "init_mem_gpu_alloc_delta": 241969152,
+    "init_mem_gpu_peaked_delta": 0,
+    "predict_gen_len": 2.2309,
+    "predict_loss": 0.7432795166969299,
+    "predict_rouge1": 87.8636,
+    "predict_rouge2": 3.3676,
+    "predict_rougeL": 87.8602,
+    "predict_rougeLsum": 87.8571,
+    "predict_runtime": 1236.1333,
+    "predict_samples": 221160,
+    "predict_samples_per_second": 178.913,
+    "test_mem_cpu_alloc_delta": 294912000,
+    "test_mem_cpu_peaked_delta": 300380160,
+    "test_mem_gpu_alloc_delta": 0,
+    "test_mem_gpu_peaked_delta": 2495247872
+}

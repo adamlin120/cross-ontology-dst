@@ -1,6 +1,6 @@
 #!/bin/bash
 RUN_NAME="${1:-tmp}"
-MODEL="${2:-mrm8488/t5-base-finetuned-squadv2}"
+MODEL="${2:-t5-small}"
 EPOCH="${3:-20}"
 
 export WANDB_PROJECT="T5DST"
@@ -12,7 +12,8 @@ python run_summarization.py \
     --do_train \
     --do_eval \
     --do_predict \
-    --evaluation_strategy "epoch" \
+    --evaluation_strategy "steps" \
+    --eval_steps 10000 \
     --logging_steps 100 \
     --num_train_epochs "${EPOCH}" \
     --dataset_name "./schema_guided_dstc8.py" \
@@ -20,8 +21,8 @@ python run_summarization.py \
     --source_prefix "question: " \
     --text_column "service+description+history" \
     --summary_column "value" \
-    --per_device_train_batch_size 2 \
-    --per_device_eval_batch_size 2 \
+    --per_device_train_batch_size 8 \
+    --per_device_eval_batch_size 8 \
     --gradient_accumulation_steps 2 \
     --seed 13 \
     --fp16 True \

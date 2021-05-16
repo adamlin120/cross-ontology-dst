@@ -1,6 +1,8 @@
 cased_L-12_H-768_A-12/
 cased_L-12_H-768_A-12.zip
 
+*.lock
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Byte-compiled / optimized / DLL files

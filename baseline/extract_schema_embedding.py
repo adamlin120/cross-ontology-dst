@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Extract BERT embeddings for slots, values, intents in schema."""
+"""Extract BERT embeddings for slots, values, intents in slot_description."""
 # Modified from bert.extract_features
 
 from __future__ import absolute_import, division, print_function
@@ -165,10 +165,10 @@ def model_fn_builder(bert_config, init_checkpoint, use_tpu, use_one_hot_embeddin
 
 
 class SchemaEmbeddingGenerator(object):
-    """Generate embeddings different components of a service schema."""
+    """Generate embeddings different components of a service slot_description."""
 
     def __init__(self, tokenizer, estimator, max_seq_length):
-        """Generate the embeddings for a schema's elements.
+        """Generate the embeddings for a slot_description's elements.
 
         Args:
           tokenizer: BERT's wordpiece tokenizer.
@@ -282,7 +282,7 @@ class SchemaEmbeddingGenerator(object):
           intent's full description.
 
         Args:
-          service_schema: A ServiceSchema object containing the schema for the
+          service_schema: A ServiceSchema object containing the slot_description for the
             corresponding service.
 
         Returns:
@@ -313,7 +313,7 @@ class SchemaEmbeddingGenerator(object):
           slot's full description.
 
         Args:
-          service_schema: A ServiceSchema object containing the schema for the
+          service_schema: A ServiceSchema object containing the slot_description for the
             corresponding service.
 
         Returns:
@@ -346,7 +346,7 @@ class SchemaEmbeddingGenerator(object):
           slot value's full description.
 
         Args:
-          service_schema: A ServiceSchema object containing the schema for the
+          service_schema: A ServiceSchema object containing the slot_description for the
             corresponding service.
 
         Returns:
@@ -395,7 +395,7 @@ class SchemaEmbeddingGenerator(object):
         return features
 
     def _get_input_fn(self, schemas):
-        """Get the input function to compute schema element embeddings.
+        """Get the input function to compute slot_description element embeddings.
 
         Args:
           schemas: A wrapper for all service schemas in the dataset to be embedded.
@@ -417,7 +417,7 @@ class SchemaEmbeddingGenerator(object):
         return input_fn
 
     def _populate_schema_embeddings(self, schemas, schema_embeddings):
-        """Run the BERT estimator and populate all schema embeddings."""
+        """Run the BERT estimator and populate all slot_description embeddings."""
         input_fn = self._get_input_fn(schemas)
         completed_services = set()
         for output in self._estimator.predict(input_fn, yield_single_examples=True):
@@ -435,7 +435,7 @@ class SchemaEmbeddingGenerator(object):
                 emb_mat[output["intent_or_slot_id"]] = embedding
 
     def save_embeddings(self, schemas, output_file, dataset_config):
-        """Generate schema element embeddings and save it as a numpy file."""
+        """Generate slot_description element embeddings and save it as a numpy file."""
         schema_embs = []
         max_num_intent = dataset_config.max_num_intent
         max_num_cat_slot = dataset_config.max_num_cat_slot

@@ -131,7 +131,8 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
             name="dialogues", description="The dataset of annotated dialogues."
         ),
         datasets.BuilderConfig(
-            name="schema", description="The schemas corresponding to the API calls."
+            name="slot_description",
+            description="The schemas corresponding to the API calls.",
         ),
         datasets.BuilderConfig(
             name="turns",
@@ -146,7 +147,7 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
     DEFAULT_CONFIG_NAME = "dialogues"
 
     def _info(self):
-        if self.config.name == "schema":
+        if self.config.name == "slot_description":
             features = datasets.Features(
                 {
                     "service_name": datasets.Value("string"),
@@ -379,14 +380,24 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
         """Returns SplitGenerators."""
         data_files = dl_manager.download_and_extract(_URLs)
         if self.config.name == "slots":
-            self.desc_per_slot = {split: {
-                (ins["service_name"], name): des
-                for ins in ds
-                for des, name in zip(ins["slots"]["description"], ins["slots"]["name"])
-            }
+            self.desc_per_slot = {
+                split
+                if split != "validation"
+                else "dev": {
+                    (ins["service_name"], name): des
+                    for ins in ds
+                    for des, name in zip(
+                        ins["slots"]["description"], ins["slots"]["name"]
+                    )
+                }
                 for split, ds in datasets.load_dataset(
-                    "schema_guided_dstc8", "schema"
+                    "schema_guided_dstc8", "slot_description"
                 ).items()
+            }
+            self.all_desc = {
+                k: v
+                for split_desc in self.desc_per_slot.values()
+                for k, v in split_desc.items()
             }
 
         return [
@@ -410,13 +421,13 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
             fpath
             for fname, fpath in filepaths.items()
             if fname.startswith(
-                f"{split}_{self.config.name if self.config.name in {'dialogues', 'schema'} else 'dialogues'}"
+                f"{split}_{self.config.name if self.config.name in {'dialogues', 'slot_description'} else 'dialogues'}"
             )
         ]
         for filepath in file_list:
             examples = json.load(open(filepath, encoding="utf-8"))
             for example in examples:
-                if self.config.name == "schema":
+                if self.config.name == "slot_description":
                     example["intents"] = example.get("intents", [])
                     for intent in example["intents"]:
                         optional_slots = intent.get("optional_slots", {})
@@ -489,59 +500,81 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                             }
                             if self.config.name == "slots":
                                 service = frame["service"]
-                                for slot_name, slot_value in slot_values_dict.items():
-                                    example_turn = {
-                                        **deepcopy(example),
-                                        **turn,
-                                        "name": slot_name,
-                                        "description": self.desc_per_slot[split][
-                                            (service, slot_name)
-                                        ],
-                                        "value": slot_value[0],
-                                        "history": history.strip(),
-                                    }
-                                    example_turn[
-                                        "service+description+history"
-                                    ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
-                                    del example_turn["turns"]
-                                    del example_turn["frames"]
-                                    id_ += 1
-                                    yield id_, example_turn
+                                if split in {"train", "dev"}:
+                                    for (
+                                        slot_name,
+                                        slot_value,
+                                    ) in slot_values_dict.items():
+                                        example_turn = {
+                                            **deepcopy(example),
+                                            **turn,
+                                            "name": slot_name,
+                                            "description": self.all_desc[
+                                                (service, slot_name)
+                                            ],
+                                            "value": slot_value[0],
+                                            "history": history.strip(),
+                                        }
+                                        example_turn[
+                                            "service+description+history"
+                                        ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
+                                        del example_turn["turns"]
+                                        del example_turn["frames"]
+                                        id_ += 1
+                                        yield id_, example_turn
 
-                                if split == "train":
-                                    negative_slot_names = self.desc_per_slot[split].keys() - {
+                                    negative_slot_names = self.desc_per_slot[
+                                        split
+                                    ].keys() - {
                                         (service, name)
                                         for name in slot_values_dict.keys()
                                     }
-                                    negative_slot_names = sample(negative_slot_names, max(4, min(8, len(slot_values_dict))))
+                                    negative_slot_names = sample(
+                                        negative_slot_names,
+                                        max(4, min(8, len(slot_values_dict))),
+                                    )
+                                    for service, slot_name in negative_slot_names:
+                                        example_turn = {
+                                            **deepcopy(example),
+                                            **turn,
+                                            "name": slot_name,
+                                            "description": self.all_desc[
+                                                (service, slot_name)
+                                            ],
+                                            "value": "none",
+                                            "history": history.strip(),
+                                        }
+                                        example_turn[
+                                            "service+description+history"
+                                        ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
+                                        del example_turn["turns"]
+                                        del example_turn["frames"]
+                                        id_ += 1
+                                        yield id_, example_turn
                                 else:
-                                    negative_slot_names = {key for split_desc in self.desc_per_slot.values() for key in split_desc} - {
-                                        (service, name)
-                                        for name in slot_values_dict.keys()
-                                    }
-                                for service, slot_name in negative_slot_names:
-                                    example_turn = {
-                                        **deepcopy(example),
-                                        **turn,
-                                        "name": slot_name,
-                                        "description": self.desc_per_slot[split][
-                                            (service, slot_name)
-                                        ],
-                                        "value": "none",
-                                        "history": history.strip(),
-                                    }
-                                    example_turn[
-                                        "service+description+history"
-                                    ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
-                                    del example_turn["turns"]
-                                    del example_turn["frames"]
-                                    id_ += 1
-                                    yield id_, example_turn
+                                    for service, slot_name in self.all_desc.keys():
+                                        example_turn = {
+                                            **deepcopy(example),
+                                            **turn,
+                                            "name": slot_name,
+                                            "description": self.all_desc[
+                                                (service, slot_name)
+                                            ],
+                                            "value": "none",
+                                            "history": history.strip(),
+                                        }
+                                        example_turn[
+                                            "service+description+history"
+                                        ] = f"{service} {example_turn['description']} context: {example_turn['history']}".strip()
+                                        del example_turn["turns"]
+                                        del example_turn["frames"]
+                                        id_ += 1
+                                        yield id_, example_turn
                         if self.config.name == "turns":
                             example_turn = {**deepcopy(example), **turn}
                             del example_turn["turns"]
                             id_ += 1
                             yield id_, example_turn
-                if self.config.name in {"dialogues", "schema"}:
+                if self.config.name in {"dialogues", "slot_description"}:
                     id_ += 1
                     yield id_, example

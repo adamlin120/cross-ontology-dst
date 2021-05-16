@@ -134,7 +134,7 @@ flags.DEFINE_string(
     "dstc8_data_dir",
     None,
     "Directory for the downloaded DSTC8 data, which contains the dialogue files"
-    " and schema files of all datasets (eg train, dev)",
+    " and slot_description files of all datasets (eg train, dev)",
 )
 
 flags.DEFINE_enum(
@@ -151,7 +151,7 @@ flags.DEFINE_string(
     "schema_embedding_dir",
     None,
     "Directory where .npy file for embedding of entities (slots, values,"
-    " intents) in the dataset_split's schema are stored.",
+    " intents) in the dataset_split's slot_description are stored.",
 )
 
 flags.DEFINE_string(
@@ -254,7 +254,7 @@ def _file_based_input_fn_builder(
                 t = tf.cast(t, tf.int32)
             example[name] = t
 
-        # Here we need to insert schema's entity embedding to each example.
+        # Here we need to insert slot_description's entity embedding to each example.
 
         # Shapes for reference: (all have type tf.float32)
         # "cat_slot_emb": [max_num_cat_slot, hidden_dim]
@@ -297,7 +297,7 @@ def _file_based_input_fn_builder(
 
 
 class SchemaGuidedDST(object):
-    """Baseline model for schema guided dialogue state tracking."""
+    """Baseline model for slot_description guided dialogue state tracking."""
 
     def __init__(self, bert_config, use_one_hot_embeddings):
         self._bert_config = bert_config
@@ -775,7 +775,7 @@ def _create_dialog_examples(processor, dial_file):
 
 
 def _create_schema_embeddings(bert_config, schema_embedding_file, dataset_config):
-    """Create schema embeddings and save it into file."""
+    """Create slot_description embeddings and save it into file."""
     if not tf.io.gfile.exists(FLAGS.schema_embedding_dir):
         tf.io.gfile.makedirs(FLAGS.schema_embedding_dir)
     is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
@@ -787,7 +787,7 @@ def _create_schema_embeddings(bert_config, schema_embedding_file, dataset_config
     )
 
     schema_json_path = os.path.join(
-        FLAGS.dstc8_data_dir, FLAGS.dataset_split, "schema.json"
+        FLAGS.dstc8_data_dir, FLAGS.dataset_split, "slot_description.json"
     )
     schemas = schema.Schema(schema_json_path)
 
@@ -840,7 +840,7 @@ def main(_):
         _create_dialog_examples(processor, dial_file)
         tf.compat.v1.logging.info("Finish generating the dialogue examples.")
 
-    # Generate the schema embeddings if needed or specified.
+    # Generate the slot_description embeddings if needed or specified.
     bert_init_ckpt = os.path.join(FLAGS.bert_ckpt_dir, "bert_model.ckpt")
     tokenization.validate_case_matches_checkpoint(
         do_lower_case=FLAGS.do_lower_case, init_checkpoint=bert_init_ckpt
@@ -861,9 +861,9 @@ def main(_):
         "{}_pretrained_schema_embedding.npy".format(FLAGS.dataset_split),
     )
     if not tf.io.gfile.exists(schema_embedding_file) or FLAGS.overwrite_schema_emb_file:
-        tf.compat.v1.logging.info("Start generating the schema embeddings.")
+        tf.compat.v1.logging.info("Start generating the slot_description embeddings.")
         _create_schema_embeddings(bert_config, schema_embedding_file, dataset_config)
-        tf.compat.v1.logging.info("Finish generating the schema embeddings.")
+        tf.compat.v1.logging.info("Finish generating the slot_description embeddings.")
 
     # Create estimator for training or inference.
     tf.io.gfile.makedirs(FLAGS.output_dir)
@@ -963,7 +963,7 @@ def main(_):
             for fid in dataset_config.file_ranges[FLAGS.dataset_split]
         ]
         schema_json_file = os.path.join(
-            FLAGS.dstc8_data_dir, FLAGS.dataset_split, "schema.json"
+            FLAGS.dstc8_data_dir, FLAGS.dataset_split, "slot_description.json"
         )
 
         ckpt_nums = [num for num in FLAGS.eval_ckpt.split(",") if num]

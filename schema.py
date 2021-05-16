@@ -23,7 +23,7 @@ import tensorflow.compat.v1 as tf
 
 
 class ServiceSchema(object):
-    """A wrapper for schema for a service."""
+    """A wrapper for slot_description for a service."""
 
     def __init__(self, schema_json, service_id=None):
         self._service_name = schema_json["service_name"]
@@ -126,7 +126,7 @@ class Schema(object):
     """Wrapper for schemas for all services in a dataset."""
 
     def __init__(self, schema_json_path):
-        # Load the schema from the json file.
+        # Load the slot_description from the json file.
         with tf.io.gfile.GFile(schema_json_path) as f:
             schemas = json.load(f)
         self._services = sorted(schema["service_name"] for schema in schemas)

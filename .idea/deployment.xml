@@ -13,6 +13,7 @@
             <excludedPath path="/cross-ontology-dst/cased_L-12_H-768_A-12.zip" />
             <excludedPath path="/cross-ontology-dst/output" />
             <excludedPath path="/cross-ontology-dst/multiwoz_data" />
+            <excludedPath path="/cross-ontology-dst/wandb" />
           </excludedPaths>
         </serverdata>
       </paths>

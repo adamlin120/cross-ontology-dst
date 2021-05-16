@@ -27,7 +27,7 @@ from schema_guided_dst import schema
 from schema_guided_dst.baseline.bert import tokenization
 
 # Dimension of the embedding for intents, slots and categorical slot values in
-# the schema. Should be equal to BERT's hidden_size.
+# the slot_description. Should be equal to BERT's hidden_size.
 EMBEDDING_DIMENSION = 768
 STR_DONTCARE = "dontcare"
 # The maximum total input sequence length after WordPiece tokenization.
@@ -109,7 +109,9 @@ class Dstc8DataProcessor(object):
             for i in self._dataset_config.file_ranges[dataset]
         ]
         dialogs = load_dialogues(dialog_paths)
-        schema_path = os.path.join(self.dstc8_data_dir, dataset, "schema.json")
+        schema_path = os.path.join(
+            self.dstc8_data_dir, dataset, "slot_description.json"
+        )
         schemas = schema.Schema(schema_path)
 
         examples = []
@@ -345,7 +347,7 @@ class InputExample(object):
           dataset_config: DataConfig object denoting the config of the dataset.
           max_seq_length: The maximum length of the sequence. Sequences longer than
             this value will be truncated.
-          service_schema: A ServiceSchema object wrapping the schema for the service
+          service_schema: A ServiceSchema object wrapping the slot_description for the service
             corresponding to this example.
           example_id: Unique identifier for the example.
           is_real_example: Indicates if an example is real or used for padding in a

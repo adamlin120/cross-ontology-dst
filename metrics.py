@@ -217,12 +217,18 @@ def get_slot_tagging_f1(frame_ref, frame_hyp, utt, service):
         return None
     else:
         list_ref = [
-            (s["slot"], utt[s["start"] : s["exclusive_end"]])
+            (
+                s["slot"],
+                utt[s["start"] : s["exclusive_end"]] if "start" in s else s["value"][0],
+            )
             for s in frame_ref["slots"]
             if s["slot"] in list_noncat_slots
         ]
         list_hyp = [
-            (s["slot"], utt[s["start"] : s["exclusive_end"]])
+            (
+                s["slot"],
+                utt[s["start"] : s["exclusive_end"]] if "start" in s else s["value"][0],
+            )
             for s in frame_hyp["slots"]
             if s["slot"] in list_noncat_slots
         ]

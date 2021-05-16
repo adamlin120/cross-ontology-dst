@@ -23,7 +23,8 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from schema_guided_dst import metrics
+
+import metrics
 
 flags = tf.flags
 FLAGS = flags.FLAGS
@@ -287,7 +288,9 @@ def main(_):
     dataset_ref = get_dataset_as_dict(
         os.path.join(FLAGS.dstc8_data_dir, FLAGS.eval_set, "dialogues_*.json")
     )
-    dataset_hyp = get_dataset_as_dict(os.path.join(FLAGS.prediction_dir, "*.json"))
+    dataset_hyp = get_dataset_as_dict(
+        os.path.join(FLAGS.prediction_dir, "dialogues_*.json")
+    )
 
     all_metric_aggregate, _ = get_metrics(
         dataset_ref, dataset_hyp, eval_services, in_domain_services
