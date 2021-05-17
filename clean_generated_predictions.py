@@ -3,8 +3,9 @@ from argparse import ArgumentParser
 from difflib import get_close_matches
 from pathlib import Path
 
-from datasets import load_dataset
 from tqdm import tqdm
+
+from datasets import load_dataset
 
 config2schema_path = {
     "v2.1_slots_original": "./schemas/2.1/schema.json",
@@ -24,15 +25,19 @@ def _parse_args():
     parser.add_argument(
         "config",
         type=str,
-        choices=[f"{version}_slots_{setting}" for version in ['v2.1', 'v2.2'] for setting in
-                 ['original', 'desc', 'onto', 'both']])
+        choices=[
+            f"{version}_slots_{setting}"
+            for version in ["v2.1", "v2.2"]
+            for setting in ["original", "desc", "onto", "both"]
+        ],
+    )
     return parser.parse_args()
 
 
 def main():
     args = _parse_args()
-    version, _, setting = args.config.split('_')
-    multiwoz_test = Path(f'./datasets/MultiWOZ_{version[1:]}_{setting}/test/')
+    version, _, setting = args.config.split("_")
+    multiwoz_test = Path(f"./datasets/MultiWOZ_{version[1:]}_{setting}/test/")
     schema = json.load(open(config2schema_path[args.config]))
     slot_info = {slot["name"]: slot for service in schema for slot in service["slots"]}
     dataset = load_dataset("./multi_woz_v22.py", args.config, split="test")
@@ -56,9 +61,9 @@ def main():
         service = ins["name"].split("-")[0]
         info = slot_info[ins["name"]]
         if (
-                info["is_categorical"]
-                and pred != "none"
-                and pred not in info["possible_values"]
+            info["is_categorical"]
+            and pred != "none"
+            and pred not in info["possible_values"]
         ):
             pred = get_close_matches(pred, info["possible_values"], n=1, cutoff=0.0)[0]
         ins["pred"] = pred
@@ -75,23 +80,28 @@ def main():
         if fids:
             fid = fids[0]
         else:
-            test[index]["turns"][int(ins["turn_id"])]["frames"].append({
-                "service": service,
-                "slots": [],
-                "state": {
-                    "active_intent": "NONE",
-                    "requested_slots": [],
-                    "slot_values": {}
+            test[index]["turns"][int(ins["turn_id"])]["frames"].append(
+                {
+                    "service": service,
+                    "slots": [],
+                    "state": {
+                        "active_intent": "NONE",
+                        "requested_slots": [],
+                        "slot_values": {},
+                    },
                 }
-            })
+            )
             fid = -1
 
         frame = test[index]["turns"][int(ins["turn_id"])]["frames"][fid]
         frame["state"]["slot_values"][ins["name"]] = [ins["pred"]]
-        if not info["is_categorical"] and ins["pred"].lower() in ins["utterance"].lower():
+        if (
+            not info["is_categorical"]
+            and ins["pred"].lower() in ins["utterance"].lower()
+        ):
             frame["slots"].append({"slot": ins["name"], "value": ins["pred"]})
     pred1 = test[: len(test1)]
-    pred2 = test[len(test1):]
+    pred2 = test[len(test1) :]
     assert len(pred1) == len(test1)
     assert len(pred2) == len(test2)
     (args.file.parent / "schema.json").write_text(json.dumps(schema, indent=2))

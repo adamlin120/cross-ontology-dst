@@ -28,7 +28,6 @@ from typing import Optional
 import nltk  # Here to have a nice missing dependency error message early on
 import numpy as np
 import transformers
-from datasets import load_dataset, load_metric
 from filelock import FileLock
 from transformers import (
     AutoConfig,
@@ -43,6 +42,8 @@ from transformers import (
 from transformers.file_utils import is_offline_mode
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 from transformers.utils import check_min_version
+
+from datasets import load_dataset, load_metric
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.6.0.dev0")

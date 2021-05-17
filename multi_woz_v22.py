@@ -209,10 +209,7 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
         ),
     ]
 
-    dialogue_based_config_names = {
-        "v2.2",
-        "v2.2_active_only"
-    }
+    dialogue_based_config_names = {"v2.2", "v2.2_active_only"}
     turn_based_config_names = {
         "v2.2_turns",
     }
@@ -235,8 +232,7 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
     }
     version22_config_names = {
         "v2.2",
-        "v2.2_active_only"
-        "v2.2_turns",
+        "v2.2_active_only" "v2.2_turns",
         "v2.2_slots_original",
         "v2.2_slots_desc",
         "v2.2_slots_onto",
@@ -487,9 +483,15 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, filepaths, split):
         id_ = -1
-        data_file_prefix = split if self.config.name in self.version22_config_names else self.version21_prefix[self.config.name]
+        data_file_prefix = (
+            split
+            if self.config.name in self.version22_config_names
+            else self.version21_prefix[self.config.name]
+        )
         file_list = [
-            fpath for fname, fpath in filepaths.items() if fname.startswith(data_file_prefix)
+            fpath
+            for fname, fpath in filepaths.items()
+            if fname.startswith(data_file_prefix)
         ]
         for filepath in file_list:
             dialogues = json.load(open(filepath))
