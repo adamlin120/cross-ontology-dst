@@ -92,6 +92,22 @@ _URL_LIST += [
         "v2.2_slots_both",
         "https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/2.2/schema_both.json",
     ),
+    (
+        "v2.1_slots_original",
+        "https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/2.1/schema.json",
+    ),
+    (
+        "v2.1_slots_desc",
+        "https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/2.1/schema_w_match-desc.json",
+    ),
+    (
+        "v2.1_slots_onto",
+        "https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/2.1/schema_w_match-ontology.json",
+    ),
+    (
+        "v2.1_slots_both",
+        "https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/2.1/schema_both.json",
+    ),
 ]
 
 _URL_LIST += [
@@ -112,6 +128,20 @@ _URL_LIST += [
     (
         f"test_{i:03d}",
         f"https://github.com/budzianowski/multiwoz/raw/master/data/MultiWOZ_2.2/test/dialogues_{i:03d}.json",
+    )
+    for i in range(1, 3)
+]
+_URL_LIST += [
+    (
+        f"v2.1_test_{i:03d}",
+        f"https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/MultiWOZ_2.1/test/dialogues_{i:03d}.json",
+    )
+    for i in range(1, 3)
+]
+_URL_LIST += [
+    (
+        f"v2.1_both_test_{i:03d}",
+        f"https://ytlin.s3-ap-northeast-1.amazonaws.com/data/schemas/MultiWOZ_2.1_both/test/dialogues_{i:03d}.json",
     )
     for i in range(1, 3)
 ]
@@ -157,13 +187,71 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
             version=datasets.Version("2.2.0"),
             description="MultiWOZ v2.2, slot-based",
         ),
+        datasets.BuilderConfig(
+            name="v2.1_slots_original",
+            version=datasets.Version("2.1.0"),
+            description="MultiWOZ v2.1, slot-based",
+        ),
+        datasets.BuilderConfig(
+            name="v2.1_slots_desc",
+            version=datasets.Version("2.1.0"),
+            description="MultiWOZ v2.1, slot-based",
+        ),
+        datasets.BuilderConfig(
+            name="v2.1_slots_onto",
+            version=datasets.Version("2.1.0"),
+            description="MultiWOZ v2.1, slot-based",
+        ),
+        datasets.BuilderConfig(
+            name="v2.1_slots_both",
+            version=datasets.Version("2.1.0"),
+            description="MultiWOZ v2.1, slot-based",
+        ),
     ]
 
-    SCHEMA_PATHS = {
-        "v2.1_slots_original": "./schemas/2.1/slot_description.json",
-        "v2.1_slots_desc": "./schemas/2.1/schema_w_match-desc.json",
-        "v2.1_slots_onto": "./schemas/2.1/schema_w_match_ontology.json",
-        "v2.1_slots_both": "./schemas/2.1/schema_both.json",
+    dialogue_based_config_names = {
+        "v2.2",
+        "v2.2_active_only"
+    }
+    turn_based_config_names = {
+        "v2.2_turns",
+    }
+    slot_based_config_names = {
+        "v2.2_slots_original",
+        "v2.2_slots_desc",
+        "v2.2_slots_onto",
+        "v2.2_slots_both",
+        "v2.1_slots_original",
+        "v2.1_slots_desc",
+        "v2.1_slots_onto",
+        "v2.1_slots_both",
+    }
+
+    version21_config_names = {
+        "v2.1_slots_original",
+        "v2.1_slots_desc",
+        "v2.1_slots_onto",
+        "v2.1_slots_both",
+    }
+    version22_config_names = {
+        "v2.2",
+        "v2.2_active_only"
+        "v2.2_turns",
+        "v2.2_slots_original",
+        "v2.2_slots_desc",
+        "v2.2_slots_onto",
+        "v2.2_slots_both",
+        "v2.1_slots_original",
+        "v2.1_slots_desc",
+        "v2.1_slots_onto",
+        "v2.1_slots_both",
+    }
+
+    version21_prefix = {
+        "v2.1_slots_original": "v2.1_",
+        "v2.1_slots_desc": "v2.1_",
+        "v2.1_slots_onto": "v2.1_both_",
+        "v2.1_slots_both": "v2.1_both_",
     }
 
     ORDERED_TRACK_SLOTS = [
@@ -203,7 +291,7 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
     DEFAULT_CONFIG_NAME = "v2.2_active_only"
 
     def _info(self):
-        if self.config.name == "v2.2_turns":
+        if self.config.name in self.turn_based_config_names:
             features = datasets.Features(
                 {
                     "dialogue_id": datasets.Value("string"),
@@ -270,12 +358,7 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
                     ),
                 }
             )
-        elif self.config.name in {
-            "v2.2_slots_original",
-            "v2.2_slots_desc",
-            "v2.2_slots_onto",
-            "v2.2_slots_both",
-        }:
+        elif self.config.name in self.slot_based_config_names:
             features = datasets.Features(
                 {
                     "dialogue_id": datasets.Value("string"),
@@ -290,7 +373,7 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
                     "service+description+history": datasets.Value("string"),
                 }
             )
-        elif self.config.name in {"v2.2", "v2.2_active_only"}:
+        elif self.config.name in self.dialogue_based_config_names:
             features = datasets.Features(
                 {
                     "dialogue_id": datasets.Value("string"),
@@ -404,8 +487,9 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, filepaths, split):
         id_ = -1
+        data_file_prefix = split if self.config.name in self.version22_config_names else self.version21_prefix[self.config.name]
         file_list = [
-            fpath for fname, fpath in filepaths.items() if fname.startswith(split)
+            fpath for fname, fpath in filepaths.items() if fname.startswith(data_file_prefix)
         ]
         for filepath in file_list:
             dialogues = json.load(open(filepath))
@@ -513,17 +597,12 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
                         for turn in dialogue["turns"]
                     ],
                 }
-                if self.config.name == "v2.2_turns":
+                if self.config.name in self.turn_based_config_names:
                     for turn in res["turns"]:
                         turn_res = {**deepcopy(res), **deepcopy(turn)}
                         del turn_res["turns"]
                         yield id_, turn_res
-                elif self.config.name in {
-                    "v2.2_slots_original",
-                    "v2.2_slots_desc",
-                    "v2.2_slots_onto",
-                    "v2.2_slots_both",
-                }:
+                elif self.config.name in self.slot_based_config_names:
                     history = ""
                     for turn in res["turns"]:
                         history += f"{turn['speaker']}: {turn['utterance']} "
@@ -567,5 +646,7 @@ class MultiWozV22(datasets.GeneratorBasedBuilder):
                                 del slot_res["frames"]
                                 del slot_res["dialogue_acts"]
                                 yield id_, slot_res
-                elif self.config.name in {"v2.2", "v2.2_active_only"}:
+                elif self.config.name in self.dialogue_based_config_names:
                     yield id_, res
+                else:
+                    raise ValueError(f"Unknown config: {self.config}")

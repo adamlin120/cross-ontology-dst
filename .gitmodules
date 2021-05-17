@@ -1,6 +1,0 @@
-[submodule "dstc8-schema-guided-dialogue"]
-	path = dstc8-schema-guided-dialogue
-	url = https://github.com/google-research-datasets/dstc8-schema-guided-dialogue.git
-[submodule "multiwoz_data"]
-	path = multiwoz_data
-	url = https://github.com/budzianowski/multiwoz.git
