@@ -1,6 +1,6 @@
 set -e
 
-CKPT="./output/t5s/checkpoint-40000/"
+CKPT="${1:-./output/t5s/checkpoint-40000/}"
 
 echo "SGD Test"
 gen_text="${CKPT}/generated_predictions.txt"
@@ -24,7 +24,7 @@ do
       config="v${DATASET_VERSION}_slots_${setting}"
       result_dir="results/${config}/"
       gen_text="${result_dir}/generated_predictions.txt"
-      metric_file="${result_dir}/metric.json"
+      metric_file="${result_dir}/metric.csv"
       metric_df_file="${result_dir}/metric.default.json"
       metric_nf_file="${result_dir}/metric.nofuzzy.json"
       metric_nc_file="${result_dir}/metric.nocross.json"
@@ -67,3 +67,5 @@ do
       python combine_metric.py "${result_dir}" "${metric_file}"
   done
 done
+
+python combine_all_metric.py

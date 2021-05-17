@@ -15,12 +15,12 @@ def main():
     args = _parse_args()
     metric = []
     for p in args.dir.glob("metric.*.csv"):
-        df = pd.read_csv(p, index_col="domain")
+        df = pd.read_csv(p)
         config = p.stem.split(".")[1]
-        df.insert(0, "config", [config] * len(df))
+        df.insert(0, "Eval Setting", [config] * len(df))
         metric.append(df)
     metric = pd.concat(metric)
-    metric.to_csv(args.output)
+    metric.to_csv(args.output, index=False)
     print(metric)
 
 

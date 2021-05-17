@@ -349,8 +349,8 @@ def get_metrics(dataset_ref, dataset_hyp, service_schemas, in_domain_services):
                 [
                     service_name,
                     slot_name,
-                    "mapping" if slot_name in MAPPING_SLOT else "non-mapping",
-                    "categorical" if slot["is_categorical"] else "non-categorical",
+                    "Mapping" if slot_name in MAPPING_SLOT else "Non-mapping",
+                    "Categorical" if slot["is_categorical"] else "Non-categorical",
                     acc,
                     f1,
                     precision,
@@ -360,14 +360,14 @@ def get_metrics(dataset_ref, dataset_hyp, service_schemas, in_domain_services):
     df = pd.DataFrame(
         df,
         columns=[
-            "domain",
-            "slot",
-            "mapping",
-            "categorical",
-            "accuracy",
-            "f1",
-            "recall",
-            "precision",
+            "Service",
+            "Slot",
+            "Mapping",
+            "Categorical",
+            "Accuracy",
+            "F1",
+            "Recall",
+            "Precision",
         ],
     )
 
@@ -421,7 +421,7 @@ def main(_):
         pd.DataFrame(all_metric_aggregate)
         .transpose()
         .sort_index()
-        .rename_axis("domain")
+        .rename_axis("Service")
     )
     df.to_csv(output_metric_table)
 
