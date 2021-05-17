@@ -391,7 +391,7 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                     )
                 }
                 for split, ds in datasets.load_dataset(
-                    "schema_guided_dstc8", "slot_description"
+                    "schema_guided_dstc8", "schema"
                 ).items()
             }
             self.all_desc = {
@@ -409,8 +409,8 @@ class SchemaGuidedDstc8(datasets.GeneratorBasedBuilder):
                 },
             )
             for spl, spl_enum in [
-                ("train", datasets.Split.TRAIN),
-                ("dev", datasets.Split.VALIDATION),
+                # ("train", datasets.Split.TRAIN),
+                # ("dev", datasets.Split.VALIDATION),
                 ("test", datasets.Split.TEST),
             ]
         ]
