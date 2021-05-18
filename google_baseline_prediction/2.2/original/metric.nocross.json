@@ -1,0 +1,110 @@
+{
+  "#ALL_SERVICES": {
+    "active_intent_accuracy": 0.13846310363537712,
+    "average_cat_accuracy": 0.14959128305410213,
+    "average_goal_accuracy": 0.1616485235079448,
+    "average_noncat_accuracy": 0.17859848484848484,
+    "joint_cat_accuracy": 0.47058690540784953,
+    "joint_goal_accuracy": 0.31094004340748777,
+    "joint_noncat_accuracy": 0.4599498100922409,
+    "requested_slots_f1": 0.9177564696750465,
+    "requested_slots_precision": 0.9357235711701936,
+    "requested_slots_recall": 0.9782934300958582
+  },
+  "#SEEN_SERVICES": {
+    "active_intent_accuracy": 0.13846310363537712,
+    "average_cat_accuracy": 0.14959128305410213,
+    "average_goal_accuracy": 0.1616485235079448,
+    "average_noncat_accuracy": 0.17859848484848484,
+    "joint_cat_accuracy": 0.47058690540784953,
+    "joint_goal_accuracy": 0.31094004340748777,
+    "joint_noncat_accuracy": 0.4599498100922409,
+    "requested_slots_f1": 0.9177564696750465,
+    "requested_slots_precision": 0.9357235711701936,
+    "requested_slots_recall": 0.9782934300958582
+  },
+  "attraction": {
+    "active_intent_accuracy": 0.22693977211068908,
+    "average_cat_accuracy": 0.03968253968253968,
+    "average_goal_accuracy": 0.03096314563638854,
+    "average_noncat_accuracy": 0.015578635014836795,
+    "joint_cat_accuracy": 0.4426207270754205,
+    "joint_goal_accuracy": 0.20672816060770483,
+    "joint_noncat_accuracy": 0.4342105263157895,
+    "requested_slots_f1": 0.8827914933381562,
+    "requested_slots_precision": 0.9052835051546392,
+    "requested_slots_recall": 0.9534273828902151
+  },
+  "bus": {
+    "active_intent_accuracy": 0.061313076505697235,
+    "joint_cat_accuracy": 0.6421595225176343,
+    "joint_goal_accuracy": 0.19072164948453607,
+    "joint_noncat_accuracy": 0.2786218122626153,
+    "requested_slots_f1": 0.945604991861096,
+    "requested_slots_precision": 0.945604991861096,
+    "requested_slots_recall": 1.0
+  },
+  "hospital": {
+    "active_intent_accuracy": 0.053038524145415086,
+    "joint_goal_accuracy": 0.5686380900705371,
+    "joint_noncat_accuracy": 0.5686380900705371,
+    "requested_slots_f1": 0.8537710255018991,
+    "requested_slots_precision": 0.8537710255018991,
+    "requested_slots_recall": 1.0
+  },
+  "hotel": {
+    "active_intent_accuracy": 0.2212425393380358,
+    "average_cat_accuracy": 0.33379713348067774,
+    "average_goal_accuracy": 0.29486104977797406,
+    "average_noncat_accuracy": 0.05152671755725191,
+    "joint_cat_accuracy": 0.3853771025501899,
+    "joint_goal_accuracy": 0.201709169831796,
+    "joint_noncat_accuracy": 0.4331253391209984,
+    "requested_slots_f1": 0.9556158437330439,
+    "requested_slots_precision": 0.9937601736299512,
+    "requested_slots_recall": 0.9613628142521251
+  },
+  "police": {
+    "active_intent_accuracy": 0.06660336408030386,
+    "joint_cat_accuracy": 0.6268312533912099,
+    "joint_goal_accuracy": 0.6268312533912099,
+    "joint_noncat_accuracy": 1.0,
+    "requested_slots_f1": 0.9679869777536625,
+    "requested_slots_precision": 0.9679869777536625,
+    "requested_slots_recall": 1.0
+  },
+  "restaurant": {
+    "active_intent_accuracy": 0.2323657080846446,
+    "average_cat_accuracy": 0.17018324945154212,
+    "average_goal_accuracy": 0.17963193648579068,
+    "average_noncat_accuracy": 0.2177678792378124,
+    "joint_cat_accuracy": 0.3859196961475855,
+    "joint_goal_accuracy": 0.14799240368963645,
+    "joint_noncat_accuracy": 0.2444384156266956,
+    "requested_slots_f1": 0.9243805389763067,
+    "requested_slots_precision": 0.9502826008319768,
+    "requested_slots_recall": 0.9704286489419425
+  },
+  "taxi": {
+    "active_intent_accuracy": 0.06511123168746609,
+    "average_goal_accuracy": 0.303125,
+    "average_noncat_accuracy": 0.303125,
+    "joint_goal_accuracy": 0.2932718393922952,
+    "joint_noncat_accuracy": 0.2932718393922952,
+    "requested_slots_f1": 0.8652107071803219,
+    "requested_slots_precision": 0.8692349430276722,
+    "requested_slots_recall": 0.9943027672273467
+  },
+  "train": {
+    "active_intent_accuracy": 0.18109061313076505,
+    "average_cat_accuracy": 0.05843530478132789,
+    "average_goal_accuracy": 0.10431658746322697,
+    "average_noncat_accuracy": 0.2706205813040063,
+    "joint_cat_accuracy": 0.34061313076505695,
+    "joint_goal_accuracy": 0.2516277807921867,
+    "joint_noncat_accuracy": 0.42729245794899623,
+    "requested_slots_f1": 0.9466901790558871,
+    "requested_slots_precision": 0.9998643516006511,
+    "requested_slots_recall": 0.946825827455236
+  }
+}

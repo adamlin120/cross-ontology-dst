@@ -24,6 +24,7 @@ import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from tqdm import tqdm
 
 import metrics
 
@@ -201,7 +202,7 @@ def get_metrics(dataset_ref, dataset_hyp, service_schemas, in_domain_services):
 
     # Store metrics for every frame for debugging.
     per_frame_metric = {}
-    for dial_id, dial_hyp in dataset_hyp.items():
+    for dial_id, dial_hyp in tqdm(dataset_hyp.items()):
         dial_ref = dataset_ref[dial_id]
 
         if set(dial_ref["services"]) != set(dial_hyp["services"]):
@@ -244,13 +245,15 @@ def get_metrics(dataset_ref, dataset_hyp, service_schemas, in_domain_services):
             for frame_ref in turn_ref["frames"]:
                 service_name = frame_ref["service"]
                 if service_name not in hyp_frames_by_service:
-                    raise ValueError(
-                        "Frame for service {} not found in dialogue with id {}".format(
-                            service_name, dial_id
-                        )
-                    )
+                    frame_hyp = prev_hyp_frames_by_service[service_name]
+                    # raise ValueError(
+                    #     "Frame for service {} not found in dialogue with id {}".format(
+                    #         service_name, dial_id
+                    #     )
+                    # )
+                else:
+                    frame_hyp = hyp_frames_by_service[service_name]
                 service = service_schemas[service_name]
-                frame_hyp = hyp_frames_by_service[service_name]
 
                 active_intent_acc = metrics.get_active_intent_accuracy(
                     frame_ref, frame_hyp
@@ -320,6 +323,7 @@ def get_metrics(dataset_ref, dataset_hyp, service_schemas, in_domain_services):
                         domain_key
                     ].items():
                         metric_collections[domain_key][metric_key].append(metric_value)
+            prev_hyp_frames_by_service = hyp_frames_by_service
     slot_acc_dict = {}
     df = []
     for service_name, schema in service_schemas.items():

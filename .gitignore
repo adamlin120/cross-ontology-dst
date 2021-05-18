@@ -1,3 +1,6 @@
+sgd/train/dialogues_*.json
+sgd/dev/dialogues_*.json
+
 dialogues_and_metrics.json
 
 cased_L-12_H-768_A-12/

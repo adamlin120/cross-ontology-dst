@@ -1,0 +1,100 @@
+{
+  "#ALL_SERVICES": {
+    "active_intent_accuracy": 0.18572563610642792,
+    "average_cat_accuracy": 0.14923237188959157,
+    "average_goal_accuracy": 0.1236341237385351,
+    "average_noncat_accuracy": 0.07976724451448661,
+    "joint_cat_accuracy": 0.09766684753119913,
+    "joint_goal_accuracy": 0.009088442756375475,
+    "joint_noncat_accuracy": 0.14867064568638091,
+    "requested_slots_f1": 0.9591948788507128,
+    "requested_slots_precision": 0.9846036083173458,
+    "requested_slots_recall": 0.9741326408671332
+  },
+  "#SEEN_SERVICES": {
+    "active_intent_accuracy": 0.18572563610642792,
+    "average_cat_accuracy": 0.14923237188959157,
+    "average_goal_accuracy": 0.1236341237385351,
+    "average_noncat_accuracy": 0.07976724451448661,
+    "joint_cat_accuracy": 0.09766684753119913,
+    "joint_goal_accuracy": 0.009088442756375475,
+    "joint_noncat_accuracy": 0.14867064568638091,
+    "requested_slots_f1": 0.9591948788507128,
+    "requested_slots_precision": 0.9846036083173458,
+    "requested_slots_recall": 0.9741326408671332
+  },
+  "attraction": {
+    "active_intent_accuracy": 0.21568095496473141,
+    "average_cat_accuracy": 0.03222607833415964,
+    "average_goal_accuracy": 0.02285166940339354,
+    "average_noncat_accuracy": 0.005185185185185185,
+    "joint_cat_accuracy": 0.4599837221920781,
+    "joint_goal_accuracy": 0.20306565382528485,
+    "joint_noncat_accuracy": 0.4156266956049919,
+    "requested_slots_f1": 0.9368556701030928,
+    "requested_slots_precision": 0.9971513836136734,
+    "requested_slots_recall": 0.9387321396274192
+  },
+  "bus": {
+    "active_intent_accuracy": 0.061720021703743896,
+    "joint_cat_accuracy": 0.543407487791644,
+    "joint_goal_accuracy": 0.543407487791644,
+    "requested_slots_f1": 0.9918610960390667,
+    "requested_slots_precision": 0.9918610960390667,
+    "requested_slots_recall": 1.0
+  },
+  "hospital": {
+    "active_intent_accuracy": 0.051410743353228434,
+    "joint_goal_accuracy": 0.6311720021703744,
+    "joint_noncat_accuracy": 0.6311720021703744,
+    "requested_slots_f1": 0.9290558871405318,
+    "requested_slots_precision": 0.9290558871405318,
+    "requested_slots_recall": 1.0
+  },
+  "hotel": {
+    "active_intent_accuracy": 0.26807760141093473,
+    "average_cat_accuracy": 0.29622865179827207,
+    "average_goal_accuracy": 0.2626778660974951,
+    "average_noncat_accuracy": 0.039201710620099785,
+    "joint_cat_accuracy": 0.42070275403608737,
+    "joint_goal_accuracy": 0.2113688780355447,
+    "joint_noncat_accuracy": 0.44783611450278116,
+    "requested_slots_f1": 0.9658119658119658,
+    "requested_slots_precision": 0.9990503323836657,
+    "requested_slots_recall": 0.9666259666259667
+  },
+  "restaurant": {
+    "active_intent_accuracy": 0.26926207270754204,
+    "average_cat_accuracy": 0.15014000254550083,
+    "average_goal_accuracy": 0.1395261267524041,
+    "average_noncat_accuracy": 0.18468701500258666,
+    "joint_cat_accuracy": 0.36163863266413454,
+    "joint_goal_accuracy": 0.1488062940857298,
+    "joint_noncat_accuracy": 0.34373304395008136,
+    "requested_slots_f1": 0.9489735937782601,
+    "requested_slots_precision": 0.9794492674986435,
+    "requested_slots_recall": 0.9675574244890577
+  },
+  "taxi": {
+    "active_intent_accuracy": 0.1287303309820944,
+    "average_goal_accuracy": 0.06334371754932502,
+    "average_noncat_accuracy": 0.06334371754932502,
+    "joint_goal_accuracy": 0.3293543136190993,
+    "joint_noncat_accuracy": 0.3293543136190993,
+    "requested_slots_f1": 0.9886055344546935,
+    "requested_slots_precision": 0.9956592512208355,
+    "requested_slots_recall": 0.9928106348345089
+  },
+  "train": {
+    "active_intent_accuracy": 0.3052088985349973,
+    "average_cat_accuracy": 0.10612321562734786,
+    "average_goal_accuracy": 0.08249717514124293,
+    "average_noncat_accuracy": 0.06789912130548899,
+    "joint_cat_accuracy": 0.37344004340748777,
+    "joint_goal_accuracy": 0.2091698317959848,
+    "joint_noncat_accuracy": 0.37303309820944114,
+    "requested_slots_f1": 0.9532013022246337,
+    "requested_slots_precision": 1.0,
+    "requested_slots_recall": 0.9532013022246337
+  }
+}
