@@ -1,3 +1,6 @@
+output/t5s/checkpoint-40000/*.bin
+output/t5s/checkpoint-40000/*.pt
+
 sgd/train/dialogues_*.json
 sgd/dev/dialogues_*.json
 

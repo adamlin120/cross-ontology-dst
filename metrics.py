@@ -67,8 +67,34 @@ AVERAGE_NONCAT_ACCURACY = "average_noncat_accuracy"
 JOINT_GOAL_ACCURACY = "joint_goal_accuracy"
 JOINT_CAT_ACCURACY = "joint_cat_accuracy"
 JOINT_NONCAT_ACCURACY = "joint_noncat_accuracy"
+# (6) Joint mapping group goal accuracy.
+JOINT_MAP_GOAL_ACCURACY = "joint_map_goal_accuracy"
+JOINT_MAP_CAT_ACCURACY = "joint_map_cat_accuracy"
+JOINT_MAP_NONCAT_ACCURACY = "joint_map_noncat_accuracy"
+# (7) Joint mapping group goal accuracy.
+JOINT_NONMAP_GOAL_ACCURACY = "joint_nonmap_goal_accuracy"
+JOINT_NONMAP_CAT_ACCURACY = "joint_nonmap_cat_accuracy"
+JOINT_NONMAP_NONCAT_ACCURACY = "joint_nonmap_noncat_accuracy"
 
 NAN_VAL = "NA"
+
+MAPPING_SLOT = {
+    "attraction-name",
+    "attraction-type",
+    "hotel-bookpeople",
+    "hotel-bookstay",
+    "hotel-name",
+    "hotel-stars",
+    "restaurant-bookpeople",
+    "restaurant-booktime",
+    "restaurant-food",
+    "restaurant-name",
+    "restaurant-pricerange",
+    "taxi-destination",
+    "train-bookpeople",
+    "train-departure",
+    "train-destination",
+}
 
 
 def compute_f1(list_ref, list_hyp):
@@ -151,10 +177,12 @@ def compare_slot_values(
     list_cor = []
     slot_active = []
     slot_cat = []
+    slot_names = []
 
     for slot in service["slots"]:
         slot_name = slot["name"]
         slot_cat.append(slot["is_categorical"])
+        slot_names.append(slot_name)
 
         if slot_name in slot_values_ref:  # REF=active
             slot_active.append(True)
@@ -192,7 +220,7 @@ def compare_slot_values(
     assert len(list_cor) == len(service["slots"])
     assert len(slot_active) == len(service["slots"])
     assert len(slot_cat) == len(service["slots"])
-    return list_cor, slot_active, slot_cat, slot_acc
+    return list_cor, slot_active, slot_cat, slot_acc, slot_names
 
 
 def get_active_intent_accuracy(frame_ref, frame_hyp):
@@ -282,7 +310,7 @@ def get_average_and_joint_goal_accuracy(
     """
     goal_acc = {}
 
-    list_acc, slot_active, slot_cat, slot_acc = compare_slot_values(
+    list_acc, slot_active, slot_cat, slot_acc, slot_names = compare_slot_values(
         frame_ref["state"]["slot_values"],
         frame_hyp["state"]["slot_values"],
         service,
@@ -320,5 +348,25 @@ def get_average_and_joint_goal_accuracy(
     # (5-b) non-categorical.
     noncat_acc = [acc for acc, cat in zip(list_acc, slot_cat) if not cat]
     goal_acc[JOINT_NONCAT_ACCURACY] = np.prod(noncat_acc) if noncat_acc else NAN_VAL
+
+    # (6) Joint map goal accuracy.
+    map_acc = [acc for acc, name in zip(list_acc, slot_names) if name in MAPPING_SLOT]
+    goal_acc[JOINT_MAP_GOAL_ACCURACY] = np.prod(map_acc) if map_acc else NAN_VAL
+    # (6-a) categorical.
+    cat_acc = [acc for acc, cat, name in zip(list_acc, slot_cat, slot_names) if cat and name in MAPPING_SLOT]
+    goal_acc[JOINT_MAP_CAT_ACCURACY] = np.prod(cat_acc) if cat_acc else NAN_VAL
+    # (6-b) non-categorical.
+    noncat_acc = [acc for acc, cat, name in zip(list_acc, slot_cat, slot_names) if not cat and name in MAPPING_SLOT]
+    goal_acc[JOINT_MAP_NONCAT_ACCURACY] = np.prod(noncat_acc) if noncat_acc else NAN_VAL
+
+    # (7) Joint map goal accuracy.
+    map_acc = [acc for acc, name in zip(list_acc, slot_names) if name not in MAPPING_SLOT]
+    goal_acc[JOINT_NONMAP_GOAL_ACCURACY] = np.prod(map_acc) if map_acc else NAN_VAL
+    # (7-a) categorical.
+    cat_acc = [acc for acc, cat, name in zip(list_acc, slot_cat, slot_names) if cat and name not in MAPPING_SLOT]
+    goal_acc[JOINT_NONMAP_CAT_ACCURACY] = np.prod(cat_acc) if cat_acc else NAN_VAL
+    # (7-b) non-categorical.
+    noncat_acc = [acc for acc, cat, name in zip(list_acc, slot_cat, slot_names) if not cat and name not in MAPPING_SLOT]
+    goal_acc[JOINT_NONMAP_NONCAT_ACCURACY] = np.prod(noncat_acc) if noncat_acc else NAN_VAL
 
     return goal_acc, slot_acc

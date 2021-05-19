@@ -2,25 +2,25 @@ set -e
 
 CKPT="${1:-./output/t5s/checkpoint-40000/}"
 
-#echo "SGD Test"
-#SGD_GT_DIR="./sgd/"
-#gen_text="${CKPT}/generated_predictions.txt"
-#result_dir="${CKPT}/sgd/test/"
-#metric_file="${result_dir}/metric.json"
-#
-#[[ -f "${gen_text}" ]] ||
-#bash ./run_test.sh "${CKPT}"
-#
-#[[ -f "${result_dir}/dialogues_001.json" ]] ||
-#python clean_sgd_generated_predictions.py "${gen_text}" "${result_dir}"
-#
-#echo "Ground truth SGD Data at ${SGD_GT_DIR}"
-#[[ -f "${metric_file}" ]] ||
-#python evaluate.py \
-#    --dstc8_data_dir "${SGD_GT_DIR}" \
-#    --prediction_dir "${result_dir}" \
-#    --eval_set test \
-#    --output_metric_file "${metric_file}"
+echo "SGD Test"
+SGD_GT_DIR="./sgd/"
+gen_text="${CKPT}/generated_predictions.txt"
+result_dir="${CKPT}/sgd/test/"
+metric_file="${result_dir}/metric.json"
+
+[[ -f "${gen_text}" ]] ||
+bash ./run_test.sh "${CKPT}"
+
+[[ -f "${result_dir}/dialogues_001.json" ]] ||
+python clean_sgd_generated_predictions.py "${gen_text}" "${result_dir}"
+
+echo "Ground truth SGD Data at ${SGD_GT_DIR}"
+[[ -f "${metric_file}" ]] ||
+python evaluate.py \
+    --dstc8_data_dir "${SGD_GT_DIR}" \
+    --prediction_dir "${result_dir}" \
+    --eval_set test \
+    --output_metric_file "${metric_file}"
 
 
 echo "T5DST MultiWOZ Test"
@@ -49,7 +49,7 @@ do
       [[ -f "${result_dir}/dialogues_001.json" ]] ||
       python clean_generated_predictions.py "${gen_text}" "${config}"
 
-      [[ -f "${metric_df_file}" ]] ||
+#      [[ -f "${metric_df_file}" ]] ||
       python evaluate.py \
           --dstc8_data_dir "${MWOZ_GT_DIR}" \
           --prediction_dir "${result_dir}" \
@@ -57,7 +57,7 @@ do
           --output_metric_file "${metric_df_file}" \
           --joint_acc_across_turn=true
 
-      [[ -f "${metric_nc_file}" ]] ||
+#      [[ -f "${metric_nc_file}" ]] ||
       python evaluate.py \
           --dstc8_data_dir "${MWOZ_GT_DIR}" \
           --prediction_dir "${result_dir}" \

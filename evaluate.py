@@ -214,6 +214,12 @@ def get_metrics(dataset_ref, dataset_hyp, service_schemas, in_domain_services):
             metrics.JOINT_GOAL_ACCURACY,
             metrics.JOINT_CAT_ACCURACY,
             metrics.JOINT_NONCAT_ACCURACY,
+            metrics.JOINT_MAP_GOAL_ACCURACY,
+            metrics.JOINT_MAP_CAT_ACCURACY,
+            metrics.JOINT_MAP_NONCAT_ACCURACY,
+            metrics.JOINT_NONMAP_GOAL_ACCURACY,
+            metrics.JOINT_NONMAP_CAT_ACCURACY,
+            metrics.JOINT_NONMAP_NONCAT_ACCURACY,
         ]
         for turn_id, (turn_ref, turn_hyp) in enumerate(
             zip(dial_ref["turns"], dial_hyp["turns"])

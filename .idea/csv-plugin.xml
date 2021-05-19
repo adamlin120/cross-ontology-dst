@@ -3,6 +3,27 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/output/t5s/checkpoint-40000/metric.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/t5s/checkpoint-40000/sgd/test/metric.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/t5s/checkpoint-40000/sgd/test/slot.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/results/metric.csv">
           <value>
             <Attribute>
@@ -24,7 +45,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/results/v2.1_slots_original/metric.default.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/results/v2.1_slots_original/metric.nocross.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/results/v2.1_slots_original/metric.nofuzzy.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
